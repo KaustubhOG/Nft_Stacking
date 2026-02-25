@@ -1,31 +1,42 @@
 # NFT Staking
 
-An NFT staking protocol built on Solana using the Anchor framework. Users can stake their NFTs to earn on-chain rewards over time, with all staking logic and reward calculation handled entirely by the program.
+An NFT staking protocol built on Solana using the Anchor framework. Users can mint NFTs into a collection, stake them to earn on-chain rewards over time, and claim or unstake whenever they choose.
 
 ---
 
 ## What It Does
 
-- Allows users to stake an NFT by transferring it into a program-controlled vault
-- Tracks the staking duration on-chain per user
+- Initializes a staking config that controls reward rate and freeze period
+- Creates an on-chain collection for the NFTs used in the protocol
+- Allows users to initialize their user account to track points and stake count
+- Allows users to mint NFTs directly into the collection
+- Allows users to stake an NFT — locking it and recording the stake timestamp
 - Calculates and distributes token rewards based on time staked
-- Allows users to unstake their NFT and claim accumulated rewards at any time
+- Allows users to unstake their NFT and claim accumulated rewards
 
 ---
 
 ## Code Structure
 
 ```
-programs/nft-staking/src/
-├── lib.rs                  — program entry point, instruction routing
+programs/anchor-nft-staking-q4-25/src/
+├── lib.rs
+├── errors.rs
 ├── instructions/
-│   ├── initialize.rs       — sets up the staking config and reward mint
-│   ├── stake.rs            — transfers NFT into vault, records stake timestamp
-│   ├── unstake.rs          — returns NFT to user, triggers reward claim
-│   └── claim.rs            — calculates elapsed time, mints reward tokens to user
+│   ├── mod.rs
+│   ├── initialize_config.rs    — sets up staking config: reward rate, freeze period
+│   ├── initialize_user.rs      — creates per-user account to track points and stakes
+│   ├── create_collection.rs    — creates the NFT collection used by the protocol
+│   ├── mint_nft.rs             — mints a new NFT into the collection
+│   ├── stake.rs                — locks the NFT, records stake timestamp
+│   ├── unstake.rs              — unlocks the NFT, triggers reward claim
+│   └── claim.rs                — calculates elapsed time, mints reward tokens to user
 └── state/
-    ├── config.rs           — staking config: reward rate, freeze period
-    └── stake_account.rs    — per-user stake record: NFT mint, timestamp, bump
+    ├── mod.rs
+    ├── stake_config.rs         — reward rate, freeze period, bump
+    ├── user_account.rs         — points balance, amount staked, bump
+    ├── stake_account.rs        — NFT mint, stake timestamp, bump
+    └── collection_info.rs      — collection mint and authority info
 ```
 
 ---
